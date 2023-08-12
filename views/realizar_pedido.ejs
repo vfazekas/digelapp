@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Product Cards</title>
+    <!-- Include Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        .custom-card .card-text {
+            font-size: 0.875rem;
+            height: 40px; /* Limit the text height to avoid overflow */
+            overflow: hidden; /* Hide overflowing text */
+        }
+
+        /* Additional custom styling */
+        .custom-card .card-text {
+            font-size: 0.875rem;
+            height: 40px; /* Limit the text height to avoid overflow */
+            overflow: hidden; /* Hide overflowing text */
+        }
+        /* Set container width to 50% of the screen */
+        .half-width-container {
+            width: 50%;
+            margin: 0 auto; /* Center the container horizontally */
+        }
+    </style>
+</head>
+<body>
+    <div class="container text-center mt-5">
+        <div class="row">
+            <!-- Product Cards -->
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Featured Products</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <% products.forEach(function(product) { %>
+                                <div class="col-md-4">
+                                    <div class="card mb-4 shadow-sm custom-card">
+                                        <div class="card-body">
+                                            <img src="<%= product.image %>" style="width: 100px; height: 100px;">
+                                            <h4 class="card-title"><%= product.name %></h4>
+                                            <p class="card-text"><strong>Price: $<%= product.price %></strong></p>
+                                            <!-- Button to open the modal -->
+                                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#quantityModal-<%= product.id %>">
+                                                Add to Cart
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                        
+                                 <!-- Modal for Quantity -->
+                        <div class="modal fade" id="quantityModal-<%= product.id %>" tabindex="-1" role="dialog" aria-labelledby="quantityModalLabel" aria-hidden="true">
+                         <div class="modal-dialog" role="document">
+                             <div class="modal-content">
+                                 <div class="modal-header">
+                                     <h5 class="modal-title" id="quantityModalLabel">Enter Quantity for <%= product.name %></h5>
+                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                         <span aria-hidden="true">&times;</span>
+                                     </button>
+                                 </div>
+                                 <div class="modal-body">
+                                     <!-- Add quantity input form here -->
+                                     <form id="quantityForm-<%= product.id %>">
+                                         <div class="form-group">
+                                             <label for="quantity">Quantity:</label>
+                                             <input type="number" class="form-control" id="quantity-<%= product.id %>" name="quantity" min="1" value="1">
+                                         </div>
+                                     </form>
+                                 </div>
+                                 <div class="modal-footer">
+                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                                     <button type="button" class="btn btn-primary" onclick="addToCart('<%= product.name %>', '<%= product.id %>')">Add to Cart</button>
+                                 </div>
+                             </div>
+                         </div>
+                     </div>
+                     <!-- End Modal for Quantity -->
+                            <% }); %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Cart Table -->
+            <div class="col-md-6">
+             <table class="table table-bordered">
+                 <thead>
+                     <tr>
+                         <th>Product Name</th>
+                         <th>Quantity</th>
+                     </tr>
+                 </thead>
+                 <tbody id="cartTableBody">
+                 </tbody>
+             </table>
+             <p id="cartEmptyMessage">Cart is empty</p>
+         </div>
+     </div>
+ </div>
+
+ <!-- Include Bootstrap JS (optional) -->
+ <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+ <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+ <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+ <script>
+     // JavaScript code to handle adding to cart
+     const cart = [];
+
+     function addToCart(productName, productId) {
+         // Find the quantity input element using the product's unique ID
+         const quantityInput = document.getElementById('quantity-' + productId);
+         // Get the value of the quantity input
+         const quantity = parseInt(quantityInput.value);
+
+         // Add the product and quantity to the cart
+         cart.push({ product: productName, quantity: quantity });
+
+         // Update the cart table
+         updateCartTable();
+
+         // You can perform additional actions here, such as updating the UI to show the cart contents
+         alert(quantity + " " + productName + " added to cart!");
+     }
+
+     function updateCartTable() {
+         const cartTableBody = document.getElementById("cartTableBody");
+         const cartEmptyMessage = document.getElementById("cartEmptyMessage");
+         cartTableBody.innerHTML = "";
+
+         if (cart.length > 0) {
+             cartEmptyMessage.style.display = "none";
+             cart.forEach(function(item) {
+                 const row = document.createElement("tr");
+                 const productNameCell = document.createElement("td");
+                 const quantityCell = document.createElement("td");
+
+                 productNameCell.textContent = item.product;
+                 quantityCell.textContent = item.quantity;
+
+                 row.appendChild(productNameCell);
+                 row.appendChild(quantityCell);
+                 cartTableBody.appendChild(row);
+             });
+         } else {
+             cartEmptyMessage.style.display = "block";
+         }
+     }
+ </script>
+</body>
+</html>
